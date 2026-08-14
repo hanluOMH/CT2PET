@@ -216,3 +216,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# CT2PET training outputs
+staging_cache/
+checkpoints/
+runs/
+metrics.csv
+*.pt
+*.pth

@@ -1,0 +1,54 @@
+project:
+  name: psma_ct_to_pet_pix2pix
+  seed: 42
+
+paths:
+  data_root: ../data
+  train_ct_dir: ct_clipped_no_normed
+  train_pet_dir: suv_clipped_no_normed
+  val_ct_dir: ct_val
+  val_pet_dir: pet_val
+  staging_root: staging_cache
+  checkpoint_dir: checkpoints
+  run_dir: runs
+  metrics_file: metrics.csv
+
+data:
+  image_size: 256
+  slice_axis: 2
+  skip_empty_slices: true
+  empty_pet_threshold: 0.01
+  max_train_slices: 8
+  max_val_slices: 4
+  chunk_cases: 1
+  max_cache_gb: 40
+  val_visuals: 4
+
+normalization:
+  ct_min: -1000.0
+  ct_max: 2000.0
+  pet_min: 0.0
+  pet_max: 50.0
+
+model:
+  in_channels: 1
+  out_channels: 1
+  base_channels: 32
+  lambda_l1: 100.0
+  gan_mode: lsgan
+
+train:
+  epochs: 1
+  batch_size: 1
+  lr: 0.0002
+  beta1: 0.5
+  beta2: 0.999
+  device: auto
+  amp: false
+  num_workers: 0
+  pin_memory: false
+  persistent_workers: false
+  prefetch_factor: null
+  log_every: 10
+  resume: true
+  save_epoch_checkpoints: true

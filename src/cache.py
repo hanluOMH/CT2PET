@@ -24,6 +24,7 @@ class ChunkManager:
         self.staging_root = staging_root
         self.chunk_cases = int(cfg["data"]["chunk_cases"])
         self.max_cache_gb = float(cfg["data"]["max_cache_gb"])
+        self.cfg = cfg
         self.norm = cfg["normalization"]
         self._executor = ThreadPoolExecutor(max_workers=1)
         self._future: Future[Path] | None = None
@@ -81,6 +82,13 @@ class ChunkManager:
 
             ct_norm = normalize_to_minus_one_one(ct, self.norm["ct_min"], self.norm["ct_max"])
             pet_norm = normalize_to_minus_one_one(pet, self.norm["pet_min"], self.norm["pet_max"])
+            original_shape = tuple(ct_norm.shape)
+            slice_axis = int(self.cfg["data"].get("slice_axis", 2)) if hasattr(self, "cfg") else 2
+            if slice_axis != 0:
+                ct_norm = np.moveaxis(ct_norm, slice_axis, 0)
+                pet_norm = np.moveaxis(pet_norm, slice_axis, 0)
+            ct_norm = np.ascontiguousarray(ct_norm)
+            pet_norm = np.ascontiguousarray(pet_norm)
             ct_path = out_dir / f"{case['case_id']}_ct.npy"
             pet_path = out_dir / f"{case['case_id']}_pet.npy"
             np.save(ct_path, ct_norm)
@@ -91,6 +99,8 @@ class ChunkManager:
                     "ct": str(ct_path),
                     "pet": str(pet_path),
                     "shape": list(ct_norm.shape),
+                    "original_shape": list(original_shape),
+                    "cached_slice_axis": 0,
                     "ct_meta": ct_meta,
                     "pet_meta": pet_meta,
                 }

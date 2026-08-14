@@ -3,7 +3,7 @@ project:
   seed: 42
 
 paths:
-  data_root: ../data
+  data_root: /cloud/cloud-ssd1/root
   train_ct_dir: ct_clipped_no_normed
   train_pet_dir: suv_clipped_no_normed
   val_ct_dir: ct_val
@@ -14,13 +14,13 @@ paths:
   metrics_file: metrics.csv
 
 data:
-  image_size: 256
+  image_size: 512
   slice_axis: 2
-  skip_empty_slices: true
+  skip_empty_slices: false
   empty_pet_threshold: 0.01
-  max_train_slices: 8
-  max_val_slices: 4
-  chunk_cases: 1
+  max_train_slices: null
+  max_val_slices: 64
+  chunk_cases: 4
   max_cache_gb: 40
   val_visuals: 4
 
@@ -33,22 +33,22 @@ normalization:
 model:
   in_channels: 1
   out_channels: 1
-  base_channels: 32
+  base_channels: 64
   lambda_l1: 100.0
   gan_mode: lsgan
 
 train:
   epochs: 1
-  batch_size: 1
+  batch_size: 8
   lr: 0.0002
   beta1: 0.5
   beta2: 0.999
   device: auto
-  amp: false
-  num_workers: 0
-  pin_memory: false
-  persistent_workers: false
-  prefetch_factor: null
+  amp: true
+  num_workers: 8
+  pin_memory: true
+  persistent_workers: true
+  prefetch_factor: 4
   log_every: 10
   resume: true
   save_epoch_checkpoints: true

@@ -43,7 +43,7 @@ class SliceDataset:
             ct = np.load(item["ct"], mmap_mode="r")
             pet = np.load(item["pet"], mmap_mode="r")
             self.volumes.append({"case_id": item["case_id"], "ct": ct, "pet": pet})
-            for slice_idx in range(ct.shape[self.slice_axis]):
+            for slice_idx in range(ct.shape[0]):
                 if skip_empty_slices:
                     pet_slice = self._take_slice(pet, slice_idx)
                     if float(np.mean(pet_slice > -0.999)) < empty_pet_threshold:
@@ -73,7 +73,7 @@ class SliceDataset:
         }
 
     def _take_slice(self, arr: np.ndarray, idx: int) -> np.ndarray:
-        return np.take(arr, idx, axis=self.slice_axis)
+        return arr[idx]
 
 
 def create_loader(dataset, cfg: dict[str, Any], shuffle: bool):

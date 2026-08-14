@@ -35,6 +35,12 @@ def get_device(name: str) -> torch.device:
     return torch.device(name)
 
 
+def make_grad_scaler(enabled: bool):
+    if hasattr(torch.amp, "GradScaler"):
+        return torch.amp.GradScaler(enabled=enabled)
+    return torch.cuda.amp.GradScaler(enabled=enabled)
+
+
 def gan_loss(pred: torch.Tensor, target_is_real: bool, mode: str) -> torch.Tensor:
     target = torch.ones_like(pred) if target_is_real else torch.zeros_like(pred)
     if mode == "lsgan":
@@ -50,7 +56,7 @@ def save_checkpoint(
     discriminator: nn.Module,
     opt_g: torch.optim.Optimizer,
     opt_d: torch.optim.Optimizer,
-    scaler: torch.amp.GradScaler,
+    scaler: Any,
     best_mae: float,
     cfg: dict[str, Any],
 ) -> None:
@@ -77,7 +83,7 @@ def load_checkpoint(
     discriminator: nn.Module,
     opt_g: torch.optim.Optimizer,
     opt_d: torch.optim.Optimizer,
-    scaler: torch.amp.GradScaler,
+    scaler: Any,
     device: torch.device,
 ) -> tuple[int, int, float]:
     ckpt = torch.load(path, map_location=device)
@@ -170,7 +176,7 @@ def train_one_epoch(
     discriminator: nn.Module,
     opt_g: torch.optim.Optimizer,
     opt_d: torch.optim.Optimizer,
-    scaler: torch.amp.GradScaler,
+    scaler: Any,
     train_cases: list[dict[str, str]],
     cfg: dict[str, Any],
     device: torch.device,
@@ -271,7 +277,7 @@ def main() -> None:
 
     opt_g = torch.optim.Adam(generator.parameters(), lr=float(cfg["train"]["lr"]), betas=(float(cfg["train"]["beta1"]), float(cfg["train"]["beta2"])))
     opt_d = torch.optim.Adam(discriminator.parameters(), lr=float(cfg["train"]["lr"]), betas=(float(cfg["train"]["beta1"]), float(cfg["train"]["beta2"])))
-    scaler = torch.amp.GradScaler(enabled=bool(cfg["train"]["amp"]) and device.type == "cuda")
+    scaler = make_grad_scaler(enabled=bool(cfg["train"]["amp"]) and device.type == "cuda")
 
     checkpoint_dir = resolve_path(cfg["paths"]["checkpoint_dir"])
     run_dir = resolve_path(cfg["paths"]["run_dir"]) / cfg["project"]["name"]

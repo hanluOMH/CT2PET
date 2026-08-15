@@ -221,6 +221,7 @@ __marimo__/
 staging_cache/
 checkpoints/
 runs/
+validation_images/
 metrics.csv
 *.pt
 *.pth

@@ -21,7 +21,7 @@ from src.data import SliceDataset, create_loader
 from src.metrics import AverageMeter, mae, psnr, rmse, ssim_simple
 from src.models import PatchDiscriminator, UNetGenerator, init_weights
 from src.utils import append_metrics, load_config, pair_cases, safe_rmtree, set_seed, setup_logging
-from src.visualization import denorm_tensor, make_visual_grid
+from src.visualization import denorm_tensor, make_visual_grid, save_visual_grid
 
 
 def resolve_path(path: str) -> Path:
@@ -166,6 +166,12 @@ def validate(
             max_items=int(cfg["data"]["val_visuals"]),
         )
         writer.add_image("val/ct_fake_real_error", grid, epoch)
+        writer.add_image(f"val_epoch_{epoch:03d}/ct_fake_real_error", grid, epoch)
+        writer.flush()
+        image_dir = resolve_path(cfg["paths"]["validation_image_dir"])
+        image_path = image_dir / f"epoch_{epoch:03d}.png"
+        save_visual_grid(image_path, grid)
+        logging.info("Saved validation image grid to %s", image_path)
     generator.train()
     return results
 

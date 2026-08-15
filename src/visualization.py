@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import torch
 
 
@@ -25,3 +27,11 @@ def make_visual_grid(ct: torch.Tensor, fake: torch.Tensor, real: torch.Tensor, n
     err_show = normalize_for_display(torch.abs(fake_suv - real_suv), 0.0, norm["pet_max"])
     rows = torch.cat([ct_show, fake_show, real_show, err_show], dim=0)
     return make_grid(rows, nrow=max_items, padding=2)
+
+
+def save_visual_grid(path: str | Path, grid: torch.Tensor) -> None:
+    from torchvision.utils import save_image
+
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    save_image(grid, str(path))

@@ -53,3 +53,8 @@ train:
   log_every: 10
   resume: true
   save_epoch_checkpoints: true
+
+visualization:
+  pet_display_min: 0.0
+  pet_display_max: 10.0
+  error_display_max: 5.0

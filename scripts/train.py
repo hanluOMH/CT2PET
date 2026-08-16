@@ -168,8 +168,13 @@ def validate(
         writer.add_image("val/ct_fake_real_error", grid, epoch)
         writer.add_image(f"val_epoch_{epoch:03d}/ct_fake_real_error", grid, epoch)
         writer.flush()
+<<<<<<< HEAD
         image_dir = resolve_path(cfg["paths"]["validation_image_dir"])
         image_path = image_dir / f"epoch_{epoch:03d}.png"
+=======
+        image_dir = resolve_path(cfg["paths"].get("validation_image_dir", "validation_images"))
+        image_path = image_dir / f"epoch_{epoch:03d}_ct_fake_real_error.png"
+>>>>>>> 0c7f74d (Improve CT-to-PET validation monitoring)
         save_visual_grid(image_path, grid)
         logging.info("Saved validation image grid to %s", image_path)
     generator.train()

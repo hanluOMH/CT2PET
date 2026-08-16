@@ -225,3 +225,21 @@ validation_images/
 metrics.csv
 *.pt
 *.pth
+# CT2PET server training artifacts
+staging_cache/
+checkpoints/
+runs/
+validation_images/
+validation_images_enhanced/
+validation_images_from_tensorboard/
+validation_images_old_layout/
+validation_numeric_plots/
+*.log
+*.pid
+*.pt
+*.pth
+*.bak_*
+copy_to_cloud_*.sh
+codex_terminal_test.txt
+ct2pet_folder.tar.gz
+
